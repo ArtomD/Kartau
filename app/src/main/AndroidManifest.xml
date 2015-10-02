@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="activities.kartau.android.gui" >
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:theme="@style/AppTheme" >
+        <activity
+            android:name=".Login"
+            android:label="@string/app_name" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".BroadcastMaps"
+            android:label="@string/title_activity_broadcast_maps" >
+        </activity>
+        <activity
+            android:name=".Support"
+            android:label="@string/title_activity_support"
+            android:parentActivityName=".BroadcastMaps" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="activities.kartau.android.gui.BroadcastMaps" />
+        </activity>
+        <activity
+            android:name=".About"
+            android:label="@string/title_activity_about" >
+        </activity>
+        <activity
+            android:name=".Profile"
+            android:label="@string/title_activity_profile" >
+        </activity>
+
+        <service
+            android:name="activities.kartau.android.Services.LocationTracker"
+            android:enabled="true"
+            android:exported="true" >
+        </service>
+        <service
+            android:name="activities.kartau.android.Services.LocationUpdater"
+            android:enabled="true"
+            android:exported="true" >
+        </service>
+    </application>
+
+</manifest>
