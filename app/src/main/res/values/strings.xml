@@ -1,7 +1,42 @@
 <resources>
     <string name="app_name">Kartau</string>
+                        <!--   Activities   -->
 
-    <string name="hello_world">Hello world!</string>
+                        <!--  About    -->
+    <string name="about_text">KARTAU is currently in closed exclusive invite only early pre-alpha testing.</string>
+    <string name="about_learn_more_button">LEARN MORE</string>
+                        <!--  Broacast Maps    -->
+    <string name="refresh">Refresh</string>
+    <string name="maps_title">Maps</string>
+    <string name="maps_seekbar_text">Set Notification Interval</string>
+    <string name="maps_cannot_connect_message">Unable to connect to the server. Please Try again</string>
+                        <!--  Loading    -->
+    <string name="loading_title">KARTAU</string>
+                        <!--  Login    -->
+    <string name="login_title">KARTAU</string>
+    <string name="login_username">Username</string>
+    <string name="login_device">Device</string>
+    <string name="login_password">Password</string>
+    <string name="login_login_button">LOGIN</string>
+    <string name="login_recoverPassword">Recover Password</string>
+    <string name="login_websiteLink">Register New Account</string>
+                        <!--  Profile    -->
+    <string name="profile_title">Profile</string>
+    <string name="profile_username">Username</string>
+    <string name="profile_first_name">First Name</string>
+    <string name="profile_last_name">Last Name</string>
+    <string name="profile_email">Email</string>
+    <string name="profile_edit">EDIT</string>
+    <string name="profile_save">SAVE</string>
+                        <!--  Support    -->
+    <string name="support_contact_us_button">CONTACT US</string>
+    <string name="support_placeholder">We are located in Toronto, Ontario, Canada.\n\n
+    Email : contact@kartau.com\n
+    Phone : 1-647-295-5958\n\n</string>
+
+
+
+
     <string name="action_settings">Settings</string>
     <string name="title_activity_broadcast_maps">BroadcastMaps</string>
     <string name="title_activity_support">Support</string>
