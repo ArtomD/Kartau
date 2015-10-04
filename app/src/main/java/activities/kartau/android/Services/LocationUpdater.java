@@ -1,4 +1,4 @@
-package activities.kartau.android.Services;
+package activities.kartau.android.services;
 
 import android.app.Service;
 import android.content.Intent;

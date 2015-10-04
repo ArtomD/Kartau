@@ -38,12 +38,12 @@
         </activity>
 
         <service
-            android:name="activities.kartau.android.Services.LocationTracker"
+            android:name="activities.kartau.android.services.LocationTracker"
             android:enabled="true"
             android:exported="true" >
         </service>
         <service
-            android:name="activities.kartau.android.Services.LocationUpdater"
+            android:name="activities.kartau.android.services.LocationUpdater"
             android:enabled="true"
             android:exported="true" >
         </service>
