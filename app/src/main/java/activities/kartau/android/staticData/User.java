@@ -5,6 +5,10 @@ import org.json.JSONObject;
 
 import java.util.LinkedList;
 
+import activities.kartau.android.httpresources.jsonparser.GetInfoParser;
+import activities.kartau.android.httpresources.jsonparser.PullGroupsParser;
+import activities.kartau.android.util.ReadWrite;
+
 /**
  * Created by Artom on 2015-10-01.
  */
@@ -21,14 +25,14 @@ public class User {
     static private int interval = CommonValues.MIN_INTERVAL;
 
     static private LinkedList<Groups> groups;
-    static private Util RW;
+    static private ReadWrite RW;
 
-    public User(Util RW){
+    public User(ReadWrite RW){
         User.RW = RW;
     }
 
 
-    public static void setRW (Util RW){User.RW = RW;}
+    public static void setRW (ReadWrite RW){User.RW = RW;}
     public static void setPassword(String password){ User.password = password; }
     public static void setUsername(String username){ User.username = username; }
     public static void setEmail(String email){
@@ -58,8 +62,6 @@ public class User {
         return User.password;
     }
     public static  String getFirstName(){
-        System.out.println("FIRST NAME: " + RW.readData(CommonValues.FIRST_NAME));
-        System.out.println("LAST NAME: " + RW.readData(CommonValues.LAST_NAME));
         if(User.firstName==null  || User.firstName.equals(""))
             User.firstName = RW.readData(CommonValues.FIRST_NAME);
         return firstName;
@@ -73,89 +75,53 @@ public class User {
         if(User.managerUsername==null  || User.managerUsername.equals(""))
             User.managerUsername = RW.readData(CommonValues.MANAGER_USERNAME);
         return managerUsername; }
+
     public static LinkedList<Groups> getGroups() {
         return groups; }
+
     public static int getInterval(){
         synchronized (lockInterval){
             return interval; }
     }
 
-    //this static method parses the response to the getInfo HTTP request
-    //it takes a response object
-    //it populates the static fields in the user class
-    //it returns an error code, 1 is expected, 0 is if there is no response JSON
-    public  static int getInfoParse(Response HTTPresponce){
-        try {
-            //creates a new JSONObject from the response
-            JSONObject jObject = new JSONObject(HTTPresponce.getJson());
-            //type 1 means no problems
-            if(jObject.getInt("type")==1) {
-                //creates a new JSONObject from the inner json
-                JSONObject innerjObject = new JSONObject(jObject.getString("content"));
-                //records the fields of the json
-                User.managerUsername = innerjObject.getString("strUsername");
-                User.email = innerjObject.getString("strEmail");
-                User.firstName = innerjObject.getString("strFirstName");
-                User.lastName = innerjObject.getString("strLastName");
-                return 1;
-            }else{
-                //returns error code
-                JSONObject innerjObject = new JSONObject(jObject.getString("content"));
-                return innerjObject.getInt("code");
+    public static void updateGroups(PullGroupsParser groups){
+        LinkedList<Groups> groupList = new LinkedList<Groups>();
+        for(int i = 0; i < groups.content.length; i++){
+            groupList.add(new Groups());
+            groupList.get(i).setCreated(String.valueOf(groups.content[i].created));
+            groupList.get(i).setStatus(String.valueOf(groups.content[i].intStatus));
+            groupList.get(i).setName(groups.content[i].strName);
+            groupList.get(i).setToken(String.valueOf(groups.content[i].token));
+            groupList.get(i).setType(String.valueOf(groups.content[i].intType));
+            for(int j = 0; j < groups.content[i].users.length; j++){
+                groupList.get(i).userList.add(new Users());
+                groupList.get(i).userList.get(j).setCryptID(groups.content[i].users[j].cryptId);
+                groupList.get(i).userList.get(j).setUsername(groups.content[i].users[j].strUsername);
+                groupList.get(i).userList.get(j).setLat(groups.content[i].users[j].lat);
+                groupList.get(i).userList.get(j).setLon(groups.content[i].users[j].lon);
             }
-        } catch (JSONException e) {
-            e.printStackTrace();
         }
-        //code reached if there is no valid json to parse
-        return 0;
+        User.groups = groupList;
     }
 
-    //this static method parses the response to the updateUser HTTP request
-    //it takes a response object
-    //it populates the static fields in the user class
-    //it returns an error code, 1 is expected, 0 is if there is no response json
-    public  static int updateUserParse(Response HTTPresponce){
-        try {
-            //creates a new JSONObject from the response
-            JSONObject jObject = new JSONObject(HTTPresponce.getJson());
-            //type 1 means no problems
-            if(jObject.getInt("type")==1) {
-                //creates a new JSONObject from the inner json
-                JSONObject innerjObject = new JSONObject(jObject.getString("content"));
-                //records the fields of the json
-                User.username = innerjObject.getString("strUsername");
-                User.email = innerjObject.getString("strEmail");
-                User.firstName = innerjObject.getString("strFirstName");
-                User.lastName = innerjObject.getString("strLastName");
-                return 1;
-            }else{
-                //returns error code
-                JSONObject innerjObject = new JSONObject(jObject.getString("content"));
-                return innerjObject.getInt("code");
-            }
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        //code reached if there is no valid json to parse
-        return 0;
+    public static void updateUser(GetInfoParser user){
+        User.username = user.content.strUsername;
+        User.firstName = user.content.strFirstName;
+        User.lastName = user.content.strLastName;
+        User.email = user.content.strEmail;
     }
+
     //this method saves the user login information on internal memory
-    public static void saveUser(Util RW) {
+    public static void saveUser(ReadWrite RW) {
         RW.storeData(CommonValues.USERNAME, User.username);
         RW.storeData(CommonValues.PASSWORD, User.password);
-        System.out.println("ANDREW: " + User.firstName);
-        System.out.println("ANDREW: " +  User.firstName);
         RW.storeData(CommonValues.FIRST_NAME, User.firstName);
         RW.storeData(CommonValues.LAST_NAME, User.lastName);
         RW.storeData(CommonValues.MANAGER_USERNAME, User.managerUsername);
         RW.storeData(CommonValues.UPDATE_INTERVAL, String.valueOf(User.interval));
-
-        System.out.println("FIRST NAME: " + RW.readData(CommonValues.FIRST_NAME));
-        System.out.println("LAST NAME: " + RW.readData(CommonValues.LAST_NAME));
     }
     //this method clears the internal and java memory regarding user profile and groups information
-    public static void clearUser(Util RW) {
+    public static void clearUser(ReadWrite RW) {
         User.managerUsername = "";
         User.username = "";
         User.password = "";

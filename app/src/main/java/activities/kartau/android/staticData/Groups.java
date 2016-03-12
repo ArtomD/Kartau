@@ -15,6 +15,7 @@ public class Groups implements Comparable<Groups> {
             token,
             created;
 
+
     public LinkedList<Users> userList = new LinkedList<Users>();
 
     public void setStatus(String status){

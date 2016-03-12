@@ -94,10 +94,10 @@
         android:orientation="vertical">
 
         <LinearLayout
-            android:id="@+id/mapsMapLayoutInsideWrapper"
+            android:id="@+id/mapsMapLayoutOutsideWrapper"
             android:layout_width="match_parent"
             android:layout_height="80dp"
-            android:orientation="horizontal">
+            android:orientation="vertical">
 
             <TextView
                 android:id="@+id/mapsMapLayoutMessage"
@@ -110,34 +110,13 @@
                 android:textColor="#78786E"
                 android:textSize="20dp"
                 android:visibility="gone" />
-
             <LinearLayout
-                android:id="@+id/mapsMapCancelButtonLayout"
-                android:layout_width="0dp"
+                android:id="@+id/mapsMapLayoutInsideWrapper"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="2.5"
-                android:orientation="vertical"
-                android:visibility="gone">
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/mapsMapMainButtonLayout"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="7"
                 android:orientation="vertical">
-
             </LinearLayout>
 
-            <LinearLayout
-                android:id="@+id/mapsMapToggleButtonLayout"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="2"
-                android:orientation="vertical">
-
-            </LinearLayout>
 
         </LinearLayout>
     </ScrollView>

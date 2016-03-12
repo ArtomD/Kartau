@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/inner_maps">
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal">
+
+        <Button
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="0dp"
+            android:layout_weight="0.2"
+            android:layout_height="wrap_content"
+            android:text="Clear"
+            android:id="@+id/mapsClearButton" />
+
+        <ToggleButton
+            android:layout_width="0dp"
+            android:layout_weight="0.6"
+            android:layout_height="wrap_content"
+            android:text="New Button"
+            android:id="@+id/mapsDisplayButton"
+            android:layout_gravity="center_horizontal" />
+
+        <ToggleButton
+            android:layout_width="0dp"
+            android:layout_weight="0.2"
+            android:layout_height="wrap_content"
+            android:text="New ToggleButton"
+            android:id="@+id/mapsOnOffButton" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/expandingMapLayout"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_gravity="center_horizontal">
+
+    </LinearLayout>
+
+</LinearLayout>

@@ -7,6 +7,7 @@
     <string name="about_learn_more_button">LEARN MORE</string>
                         <!--  Broacast Maps    -->
     <string name="refresh">Refresh</string>
+    <string name="loading">Loading</string>
     <string name="maps_title">Maps</string>
     <string name="maps_seekbar_text">Set Notification Interval</string>
     <string name="maps_cannot_connect_message">Unable to connect to the server. Please Try again</string>
@@ -34,7 +35,56 @@
     Email : contact@kartau.com\n
     Phone : 1-647-295-5958\n\n</string>
 
+                         <!--   Menus   -->
+    <string name="support_menu">Support</string>
+    <string name="login_menu">Login</string>
+    <string name="logout_menu">Logout</string>
+    <string name="about_menu">About</string>
 
+
+                            <!--   Popups   -->
+    <string name="popup_button_okay">Okay</string>
+                            <!--   Missing Credentials   -->
+    <string name="popup_missing_cred_title">Credentials Missing</string>
+    <string name="popup_missing_cred_message">Please fill out all three fields</string>
+                            <!--   Connection Failed   -->
+    <string name="popup_connection_failed_title">Unable to Connect to the Server</string>
+    <string name="popup_connection_failed_message">The server is either unavailable or you have no internet connection</string>
+                            <!--   Incorrect Login   -->
+    <string name="popup_incorrect_login_title">Incorrect Login Information</string>
+    <string name="popup_incorrect_login_message">Please re-enter your login information</string>
+                            <!--   Username exists   -->
+    <string name="popup_username_exists_title">Username Already Exists</string>
+    <string name="popup_username_exits_message">That username is already taken</string>
+                            <!--   Email exists   -->
+    <string name="popup_email_exists_title">Email Already Exists</string>
+    <string name="popup_email_exits_message">This email is already taken</string>
+                            <!--   Empty username   -->
+    <string name="popup_empty_username_title">Empty Username</string>
+    <string name="popup_empty_username_message">The username field cannot be blank</string>
+                            <!--   Empty username   -->
+    <string name="popup_invalid_username_length_title">Invalid Username Length</string>
+    <string name="popup_invalid_username_length_message">Username must be between 3 and 50 characters</string>
+                            <!--   Invalid email format   -->
+    <string name="popup_invalid_email_format_title">Invalid Email Format</string>
+    <string name="popup_invalid_email_format_message">The email must be valid</string>
+                            <!--   Invalid username format   -->
+    <string name="popup_invalid_username_format_title">Invalid Username Format</string>
+    <string name="popup_invalid_username_format_message">The username must contain letters (upper or lowercase), numbers (0-9), underscore (_), dash (-), point (.), no spaces! or other characters</string>
+                            <!--   Unknown error   -->
+    <string name="popup_unknown_error_title">Session Error</string>
+    <string name="popup_unkown_error_message">There is a problem with your session</string>
+                            <!--   GPS off   -->
+    <string name="popup_GPS_OFF_title">Your Location is Turned Off</string>
+    <string name="popup_GPS_OFF_message">Please turn your location on to enable tracking</string>
+                            <!--   Remove from map   -->
+    <string name="popup_remove_from_map_title">Remove From Map</string>
+    <string name="popup_remove_from_map_message">This will remove your current location form the map
+Are you sure?</string>
+
+
+                        <!--   Java Strings   -->
+    <string name="json_parse_fail">There was an error processing the response</string>
 
 
     <string name="action_settings">Settings</string>
@@ -42,4 +92,8 @@
     <string name="title_activity_support">Support</string>
     <string name="title_activity_about">About</string>
     <string name="title_activity_profile">Profile</string>
+    <string name="title_activity_maps">Map</string>
+
+<!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

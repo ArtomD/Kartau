@@ -6,6 +6,7 @@ package activities.kartau.android.httpresources;
 public class Response {
     private String json;
     private int errorCode;
+    private String message;
 
     public void setJson(String json){
         this.json = json;
@@ -13,7 +14,11 @@ public class Response {
     public void setErrorCode(int errorCode){
         this.errorCode = errorCode;
     }
+    public void setMessage(String message){
+        this.message = message;
+    }
 
     public String getJson(){ return this.json; }
-    public long getErrorCode(){ return this.errorCode; }
+    public int getErrorCode(){ return this.errorCode; }
+    public String getMessage(){ return this.message; }
 }

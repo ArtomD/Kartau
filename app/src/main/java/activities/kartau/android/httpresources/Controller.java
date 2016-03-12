@@ -1,108 +1,140 @@
 package activities.kartau.android.httpresources;
 
+import android.graphics.Color;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 
 import activities.kartau.android.httpresources.jsonparser.GetInfoParser;
 import activities.kartau.android.httpresources.jsonparser.NewSessionParser;
 import activities.kartau.android.httpresources.jsonparser.PullGroupsParser;
 import activities.kartau.android.httpresources.jsonparser.UpdateLocationParser;
 import activities.kartau.android.staticdata.CommonValues;
-import activities.kartau.android.staticdata.Groups;
 import activities.kartau.android.staticdata.Session;
 import activities.kartau.android.staticdata.User;
-import activities.kartau.android.staticdata.Users;
+
 
 /**
  * Created by Artom on 2015-10-01.
  */
 public class Controller {
 
-    public Response login(){
-        newSession();
-        getProfile();
+    public int login(){
+        System.out.println("LOGGING IN");
+       int errorCode = getSession();
+        if(errorCode == CommonValues.PASS) {
+            System.out.println("SESSION VALID, GETTING USER INFO");
+            errorCode = getUserInfo();
+        }
+       return errorCode;
     }
 
-    public Response pullGroups(LinkedHashMap<String, String> params){
+    public int pullGroups(LinkedHashMap<String, String> params){
         ObjectMapper mapper = new ObjectMapper();
-        params.put(CommonValues.SESSION_TOKEN,getSession());
-        PullGroupsParser groups = null;
-        try {
-            groups =  mapper.readValue(HTTPHandler.makeGetRequest(new Request(params, CommonValues.REQUEST_PULL_GROUPS)).getJson(), PullGroupsParser.class);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        LinkedList<Groups> groupList = new LinkedList<Groups>();
-        for(int i = 0; i < groups.content.length; i++){
-            groupList.add(new Groups());
-            groupList.get(i).setCreated(String.valueOf(groups.content[i].created));
-            groupList.get(i).setStatus(String.valueOf(groups.content[i].intStatus));
-            groupList.get(i).setName(groups.content[i].strName);
-            groupList.get(i).setToken(String.valueOf(groups.content[i].token));
-            groupList.get(i).setType(String.valueOf(groups.content[i].intType));
-            for(int j = 0; i < groups.content[i].users.length; j++){
-                groupList.get(i).userList.add(new Users());
-                groupList.get(i).userList.get(j).setCryptID(groups.content[i].users[j].cryptId);
-                groupList.get(i).userList.get(j).setUsername(groups.content[i].users[j].strUsername);
+        int errorCode = getSession();
+        if (errorCode==CommonValues.PASS) {
+            params.put(CommonValues.SESSION_TOKEN, Session.getToken());
+            PullGroupsParser groups = null;
+            try {
+                groups = mapper.readValue(HTTPHandler.makeGetRequest(new Request(params, CommonValues.REQUEST_PULL_GROUPS)).getJson(), PullGroupsParser.class);
+            } catch (IOException e) {
+                return CommonValues.FAIL;
             }
+            User.updateGroups(groups);
+            return groups.type;
         }
-
+        return errorCode;
     }
 
-    public Response pushUserInfo(){
-
+    public int pushUserInfo(LinkedHashMap<String, String> params){
+        ObjectMapper mapper = new ObjectMapper();
+        int errorCode = getSession();
+        if(errorCode==CommonValues.PASS) {
+            params.put(CommonValues.SESSION_TOKEN, Session.getToken());
+            GetInfoParser user = null;
+            try {
+                user = mapper.readValue(HTTPHandler.makeGetRequest(new Request(params, CommonValues.REQUEST_UPDATE_USER)).getJson(), GetInfoParser.class);
+            } catch (IOException e) {
+                return CommonValues.FAIL;
+            }
+            User.updateUser(user);
+            return user.type;
+        }
+        return errorCode;
     }
-
-
-    public Response HTTPCall(LinkedHashMap<String, String> params){
-        checkSession();
+    public int getUserInfo(){
+        LinkedHashMap<String, String> params = new LinkedHashMap<String,String>();
         params.put(CommonValues.SESSION_TOKEN, Session.getToken());
-        Request HTTPrequest = new Request(params, requestType);
-        Response HTTPresponse = HTTPHandler.makeGetRequest(HTTPrequest);
-        return HTTPresponse;
+        ObjectMapper mapper = new ObjectMapper();
+        int errorCode = getSession();
+        if(errorCode==CommonValues.PASS) {
+            params.put(CommonValues.SESSION_TOKEN, Session.getToken());
+            GetInfoParser user = null;
+            try {
+                user = mapper.readValue(HTTPHandler.makeGetRequest(new Request(params, CommonValues.REQUEST_USER_DATA)).getJson(), GetInfoParser.class);
+            } catch (IOException e) {
+                return CommonValues.FAIL;
+            }
+            User.updateUser(user);
+
+            return user.type;
+        }
+        return errorCode;
     }
 
-    public Response newSession(LinkedHashMap<String, String> params) {
-        Request HTTPrequest = new Request(params, CommonValues.REQUEST_GET_SESSION);
-        Response HTTPresponse = HTTPHandler.makeGetRequest(HTTPrequest);
-        return HTTPresponse;
+    public int newSession(LinkedHashMap<String, String> params) {
+        ObjectMapper mapper = new ObjectMapper();
+        NewSessionParser session = null;
+        try {
+            session = mapper.readValue(HTTPHandler.makeGetRequest(new Request(params, CommonValues.REQUEST_GET_SESSION)).getJson(), NewSessionParser.class);
+        } catch (IOException e) {
+            return CommonValues.FAIL;
+        }
+        System.out.println("SESSION CODE: " + session.type);
+        System.out.println("SESSION TOKEN IN PARSER: " + session.content.signedSession);
+        System.out.println("SESSION EXPIRES IN PARSER: " + session.content.expires);
+        Session.updateSession(session);
+        System.out.println("SESSION TOKEN: " + Session.getToken());
+        System.out.println("SESSION EXPIRES: " + Session.getExpires());
+        return session.type;
     }
 
-    private Response checkSession() {
-        Response HTTPResponse = new Response();
-        if ((Session.getExpires() - System.currentTimeMillis() ) < 60000) {
+
+    private int getSession() {
+        if ((Session.getExpires() - System.currentTimeMillis() ) < CommonValues.MILLISECONDS_TEN_MINUTES) {
+            System.out.println("SESSION EXPIRED, GETTING NEW SESSION");
             LinkedHashMap<String, String> params = new LinkedHashMap<String, String>();
             params.put(CommonValues.USERNAME, User.getUsername());  //username)
             params.put(CommonValues.MANAGER_USERNAME, User.getManagerUsername());  //email)
             params.put(CommonValues.PASSWORD, User.getPassword()); //password)
-            Response HTTPresponse = newSession(params);
+            return newSession(params);
         }
-        return HTTPResponse;
+        return CommonValues.PASS;
     }
 
-    private void ParseResponse(Response HTTPResponse, int callType){
+    public int updateLocation(LinkedHashMap<String, String> params){
+        System.out.println("SETTING LOCATION");
         ObjectMapper mapper = new ObjectMapper();
-        try {
-        switch(callType){
-            case 1:case 2: GetInfoParser infoParser = mapper.readValue(HTTPResponse.getJson(), GetInfoParser.class);
-                break;
-            case 3:
-                break;
-            case 4: PullGroupsParser groupParser = mapper.readValue(HTTPResponse.getJson(), PullGroupsParser.class);
-                break;
-            case 5: NewSessionParser sessionParser = mapper.readValue(HTTPResponse.getJson(), NewSessionParser.class);
-                break;
-            case 6: UpdateLocationParser locationParser = mapper.readValue(HTTPResponse.getJson(), UpdateLocationParser.class);
-                break;
-            default:
-                break;
+        System.out.println("GETTING SESSION");
+        int errorCode = getSession();
+        if(errorCode==CommonValues.PASS) {
+            System.out.println("SESSION FOUND, CONTACTING SERVER");
+            params.put(CommonValues.SESSION_TOKEN, Session.getToken());
+            UpdateLocationParser location = null;
+            try {
+                location = mapper.readValue(HTTPHandler.makeGetRequest(new Request(params, CommonValues.REQUEST_SET_POSSITION)).getJson(), UpdateLocationParser.class);
+            } catch (IOException e) {
+                System.out.println("Error code is "+errorCode);
+                e.printStackTrace();
+                return CommonValues.FAIL;
+            }
+            System.out.println("Error code is "+errorCode);
+            return location.type;
         }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+
+        return errorCode;
     }
 
 }
