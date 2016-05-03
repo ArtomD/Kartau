@@ -21,6 +21,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
@@ -49,6 +50,8 @@ public class BroadcastMaps extends ActionBarActivity implements KartauMapFragmen
     private SeekBar intervalBar;
     private TextView intervalTracking;
     private Menu menu;
+    HashMap<String, Integer> tokensToID = new HashMap<String, Integer>();
+    HashMap<String, Boolean> mapStatus = new HashMap<String, Boolean>();
 
     private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
         @Override
@@ -58,6 +61,8 @@ public class BroadcastMaps extends ActionBarActivity implements KartauMapFragmen
         }
 
     };
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -161,6 +166,21 @@ public class BroadcastMaps extends ActionBarActivity implements KartauMapFragmen
     @Override
     protected void onPause() {
         // Unregister since the activity is not visible
+        LinkedList<Groups> list = User.getGroups();
+        LinearLayout frameLayoutView = (LinearLayout) findViewById(R.id.mapsMapLayoutInsideWrapper);
+        try {
+            for (int j = 0; j < list.size(); j++) {
+
+                System.out.println("J = " + j);
+                View view = frameLayoutView.getChildAt(j);
+                ToggleButton exteriorButton = (ToggleButton) view.findViewById(tokensToID.get(list.get(j).getToken()));
+                View exteriorLayout = ((View) view.getParent()).findViewById(tokensToID.get(list.get(j).getToken()) + 1000);
+                if(mapStatus.get(list.get(j).getToken()))
+                    turnOffMap(exteriorButton, exteriorLayout, j,list);
+            }
+        }catch(Exception e){
+
+        }
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
         super.onPause();
     }
@@ -260,9 +280,12 @@ public class BroadcastMaps extends ActionBarActivity implements KartauMapFragmen
         protected void onPostExecute(Integer error) {
             //get the group list
             LinkedList<Groups> list = User.getGroups();
-            HashMap<String, Integer> tokensToID = new HashMap();
-            for(int i=0; i<list.size();i++)
-                tokensToID.put(list.get(i).getToken(),i);
+            tokensToID = new HashMap();
+            mapStatus = new HashMap();
+            for(int i=0; i<list.size();i++) {
+                tokensToID.put(list.get(i).getToken(), i);
+                mapStatus.put(list.get(i).getToken(), false);
+            }
             //check the list of active groups and delete any that the user is no longer part of
             if (error == 1) {
 
@@ -330,12 +353,8 @@ public class BroadcastMaps extends ActionBarActivity implements KartauMapFragmen
         layout.setId(mapping.get(list.get(i).getToken()) + 1000);
         layout.setBackgroundColor(Color.parseColor(CommonValues.MAP_LAYOUT_BACKGROUND_COLOR));
 
-        FragmentManager fragMan = getFragmentManager();
-        FragmentTransaction fragTransaction = fragMan.beginTransaction();
 
-        Fragment myFrag = new KartauMapFragment().newInstance(list.get(i).getToken());
-        fragTransaction.add(mapping.get(list.get(i).getToken()) + 1000, myFrag, "fragment" + i);
-        fragTransaction.commit();
+
     }
 
     private void setupMainButton(LinkedList<Groups> list, int i,final HashMap<String, Integer> mapping){
@@ -356,20 +375,57 @@ public class BroadcastMaps extends ActionBarActivity implements KartauMapFragmen
                                           View layout = findViewById(mapping.get(list.get(i).getToken()) + 1000);
 
 
-                                          if (button.isChecked()) {
+                                          if (!mapStatus.get(list.get(i).getToken())) {
+                                              ViewGroup parent = (ViewGroup) v.getParent().getParent().getParent();
+                                              System.out.println("CHILD COUNT: " + parent.getChildCount());
+                                              for (int j = 0; j < list.size(); j++) {
+
+                                                  if (j != i) {
+                                                      View view = parent.getChildAt(j);
+                                                      ToggleButton exteriorButton = (ToggleButton) view.findViewById(mapping.get(list.get(j).getToken()));
+                                                      View exteriorLayout = ((View) view.getParent()).findViewById(mapping.get(list.get(j).getToken()) + 1000);
+                                                      if (mapStatus.get(list.get(j).getToken())) {
+                                                          turnOffMap(exteriorButton, exteriorLayout, j, list);
+                                                      }
+                                                  }
+
+                                              }
                                               setButtonColor(button, CommonValues.ACTIVE_TEXT_COLOR, CommonValues.ACTIVE_BACKGROUND_COLOR);
                                               ResizeAnimation resizeAnimation = new ResizeAnimation(layout, CommonValues.MAP_LAYOUT_HEIGHT, 0);
                                               resizeAnimation.setDuration(CommonValues.RESIZE_ANIMATION_GROW);
                                               layout.startAnimation(resizeAnimation);
+                                              FragmentManager fragMan = getFragmentManager();
+
+                                              FragmentTransaction fragTransaction = fragMan.beginTransaction();
+                                              String fragmentName = "fragment" + mapping.get(list.get(i).getToken());
+                                              Fragment myFrag = new KartauMapFragment().newInstance(list.get(i).getToken());
+                                              fragTransaction.add(mapping.get(list.get(i).getToken()) + 1000, myFrag, fragmentName);
+                                              fragTransaction.commit();
+
+                                              mapStatus.put(list.get(i).getToken(), true);
+
                                           } else {
-                                              setButtonColor(button, CommonValues.INACTIVE_TEXT_COLOR, CommonValues.INACTIVE_BACKGROUND_COLOR);
-                                              ResizeAnimation resizeAnimation = new ResizeAnimation(layout, -CommonValues.MAP_LAYOUT_HEIGHT, CommonValues.MAP_LAYOUT_HEIGHT);
-                                              resizeAnimation.setDuration(CommonValues.RESIZE_ANIMATON_SHRINK);
-                                              layout.startAnimation(resizeAnimation);
+                                              turnOffMap(button, layout, i, list);
                                           }
                                       }
                                   }
         );
+    }
+
+    private void turnOffMap(ToggleButton button, View layout, int i,LinkedList<Groups> list){
+
+            setButtonColor(button, CommonValues.INACTIVE_TEXT_COLOR, CommonValues.INACTIVE_BACKGROUND_COLOR);
+            ResizeAnimation resizeAnimation = new ResizeAnimation(layout, -CommonValues.MAP_LAYOUT_HEIGHT, CommonValues.MAP_LAYOUT_HEIGHT);
+            resizeAnimation.setDuration(CommonValues.RESIZE_ANIMATON_SHRINK);
+            layout.startAnimation(resizeAnimation);
+
+        String fragmentName = "fragment" + tokensToID.get(list.get(i).getToken());
+        Fragment fragment = getFragmentManager().findFragmentByTag(fragmentName);
+        if(fragment!=null && fragment.isAdded()) {
+
+            getFragmentManager().beginTransaction().remove(fragment).commit();
+        }
+        mapStatus.put(list.get(i).getToken(), false);
     }
 
     private void setupOnOffButton(LinkedList<Groups> list, int i, String groupList,final HashMap<String, Integer> mapping){

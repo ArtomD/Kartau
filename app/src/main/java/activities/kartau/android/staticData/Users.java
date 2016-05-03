@@ -10,10 +10,13 @@ public class Users {
     private double
             lat,
             lon;
+    private int
+            active;
 
     private static final Object lockLat = new Object();
     private static final Object lockLon = new Object();
     private static final Object lockName = new Object();
+    private static final Object lockActive = new Object();
 
     public void setCryptID(String cryptID){
         this.cryptID = cryptID;
@@ -27,6 +30,9 @@ public class Users {
     public void setLon(double lon){
         synchronized (lockLon){this.lon = lon;}
     }
+    public void setActive(int active){
+        synchronized (lockActive){this.active = active;}
+    }
 
     public String getCryptID(){
         return cryptID;
@@ -38,4 +44,5 @@ public class Users {
         synchronized (lockLat){return lat;}
     }
     public double getLon() { synchronized (lockLon){return lon;} }
+    public int getActive() { synchronized (lockActive){return active;} }
 }

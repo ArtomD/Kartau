@@ -18,9 +18,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:layout_marginLeft="15dp"
-            android:layout_marginRight="15dp"
+            android:layout_marginLeft="55dp"
+            android:layout_marginRight="55dp"
             android:layout_marginTop="50dp"
+            android:gravity="center"
             android:text="@string/about_text"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:textColor="#78786E" />

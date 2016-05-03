@@ -61,9 +61,9 @@ public class LocationUpdater extends Service {
                     long time = System.currentTimeMillis();
 
                     LinkedHashMap<String, String> params = new LinkedHashMap<String, String>();
+                    Controller comm = new Controller();
                     params.put(CommonValues.SESSION_TOKEN, Session.getToken());
                     //make an instance of the HTTP controller
-                    Controller comm = new Controller();
                     comm.pullGroups(params);
 
 

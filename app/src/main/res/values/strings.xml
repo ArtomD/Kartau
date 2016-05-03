@@ -3,7 +3,7 @@
                         <!--   Activities   -->
 
                         <!--  About    -->
-    <string name="about_text">KARTAU is currently in closed exclusive invite only early pre-alpha testing.</string>
+    <string name="about_text">KARTAU is currently in closed exclusive invite only early\n pre-alpha testing.</string>
     <string name="about_learn_more_button">LEARN MORE</string>
                         <!--  Broacast Maps    -->
     <string name="refresh">Refresh</string>

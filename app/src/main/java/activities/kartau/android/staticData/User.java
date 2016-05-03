@@ -19,7 +19,8 @@ public class User {
             email,
             password,
             firstName,
-            lastName;
+            lastName,
+            cryptId;
 
     private static final Object lockInterval = new Object();
     static private int interval = CommonValues.MIN_INTERVAL;
@@ -46,6 +47,7 @@ public class User {
     }
     public static void setManagerUsername(String managerUsername) { User.managerUsername = managerUsername; }
     public static void setGroups(LinkedList<Groups> groups) { User.groups = groups; }
+    public static void setCryptId(String cryptId) { User.cryptId = cryptId; }
 
     public static  String getUsername(){
         return username;
@@ -79,6 +81,9 @@ public class User {
     public static LinkedList<Groups> getGroups() {
         return groups; }
 
+    public static String getCryptId() {
+        return cryptId; }
+
     public static int getInterval(){
         synchronized (lockInterval){
             return interval; }
@@ -93,12 +98,15 @@ public class User {
             groupList.get(i).setName(groups.content[i].strName);
             groupList.get(i).setToken(String.valueOf(groups.content[i].token));
             groupList.get(i).setType(String.valueOf(groups.content[i].intType));
-            for(int j = 0; j < groups.content[i].users.length; j++){
-                groupList.get(i).userList.add(new Users());
-                groupList.get(i).userList.get(j).setCryptID(groups.content[i].users[j].cryptId);
-                groupList.get(i).userList.get(j).setUsername(groups.content[i].users[j].strUsername);
-                groupList.get(i).userList.get(j).setLat(groups.content[i].users[j].lat);
-                groupList.get(i).userList.get(j).setLon(groups.content[i].users[j].lon);
+            for(int j = 0; j < groups.content[i].usersGroups.length; j++){
+
+                    groupList.get(i).userList.add(new Users());
+                    groupList.get(i).userList.get(j).setCryptID(groups.content[i].usersGroups[j].member.cryptId);
+                    groupList.get(i).userList.get(j).setUsername(groups.content[i].usersGroups[j].member.strUsername);
+                    groupList.get(i).userList.get(j).setLat(groups.content[i].usersGroups[j].latitude);
+                    groupList.get(i).userList.get(j).setLon(groups.content[i].usersGroups[j].longitude);
+                    groupList.get(i).userList.get(j).setActive(groups.content[i].usersGroups[j].active);
+
             }
         }
         User.groups = groupList;
@@ -109,6 +117,7 @@ public class User {
         User.firstName = user.content.strFirstName;
         User.lastName = user.content.strLastName;
         User.email = user.content.strEmail;
+        User.cryptId = user.content.cryptId;
     }
 
     //this method saves the user login information on internal memory
@@ -119,6 +128,7 @@ public class User {
         RW.storeData(CommonValues.LAST_NAME, User.lastName);
         RW.storeData(CommonValues.MANAGER_USERNAME, User.managerUsername);
         RW.storeData(CommonValues.UPDATE_INTERVAL, String.valueOf(User.interval));
+        RW.storeData(CommonValues.USER_CRYPTID, cryptId);
     }
     //this method clears the internal and java memory regarding user profile and groups information
     public static void clearUser(ReadWrite RW) {
@@ -129,12 +139,14 @@ public class User {
         User.firstName = "";
         User.lastName = "";
         User.interval = 0;
+        User.cryptId = "";
 
         RW.storeData(CommonValues.USERNAME, "");
         RW.storeData(CommonValues.PASSWORD, "");
         RW.storeData(CommonValues.MANAGER_USERNAME, "");
         RW.storeData(CommonValues.GROUPS, "");
         RW.storeData(CommonValues.UPDATE_INTERVAL, "");
+        RW.storeData(CommonValues.USER_CRYPTID, "");
 
 
     }

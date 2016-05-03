@@ -40,9 +40,12 @@ public class Controller {
             try {
                 groups = mapper.readValue(HTTPHandler.makeGetRequest(new Request(params, CommonValues.REQUEST_PULL_GROUPS)).getJson(), PullGroupsParser.class);
             } catch (IOException e) {
+                System.out.println("ERROR:");
+                e.printStackTrace();
                 return CommonValues.FAIL;
             }
             User.updateGroups(groups);
+            System.out.println("GROUP SIZE: " + User.getGroups().size());
             return groups.type;
         }
         return errorCode;

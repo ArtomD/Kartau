@@ -8,8 +8,17 @@ public class PullGroupsParser {
         public static class Users{
             public String cryptId = "";
             public String strUsername = "";
-            public double lat = 0;
-            public double lon = 0;
+
+        }
+        public static class UsersGroups{
+            public double latitude = 0;
+            public double longitude = 0;
+            public int active = 0;
+            public Member member;
+        }
+        public static class Member{
+            public String cryptId = "";
+            public String strUsername = "";
         }
         public long created = 0;
         public int intStatus = 0;
@@ -17,6 +26,7 @@ public class PullGroupsParser {
         public String strName = "";
         public int token = 0;
         public Users[] users;
+        public UsersGroups[] usersGroups;
 
         public int code = 0;
         public String message = "";
