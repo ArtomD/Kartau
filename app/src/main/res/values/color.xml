@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+<color name="statusOn">#f1ca27</color>
+<color name="statusOff">#f2591c</color>
+</resources>

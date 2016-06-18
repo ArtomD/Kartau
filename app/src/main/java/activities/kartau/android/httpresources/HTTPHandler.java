@@ -27,6 +27,7 @@ public class HTTPHandler {
         try {
             url = new URL(HTTPRequest.buildAddressString());
             HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+            urlConnection.setConnectTimeout(5000);
             try {
                 InputStream in = new BufferedInputStream(urlConnection.getInputStream());
                 BufferedReader r = new BufferedReader(new InputStreamReader(in));

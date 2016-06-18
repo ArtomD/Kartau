@@ -12,11 +12,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
@@ -45,7 +47,6 @@ public class KartauMapFragment extends Fragment {
     MapView mapView;
     GoogleMap map;
     HashMap<String,Marker> markerMap = new HashMap<String,Marker>();
-    Marker home;
     boolean firstLoad = true;
 
     // Container Activity must implement this interface
@@ -66,36 +67,62 @@ public class KartauMapFragment extends Fragment {
 
     public void updateStatus(){
         System.out.println("----------UPDATING MAP POITION-------------");
+        int markerCount =0;
+        double tempLat = 0;
+        double tempLon = 0;
         for(Map.Entry<String, Marker> entry : markerMap.entrySet()) {
             entry.getValue().setVisible(false);
         }
         LinkedList<Groups> list = User.getGroups();
+
+        System.out.println("GROUP ID: " + id);
+
+        System.out.println("USER INFO: ");
+
         LatLngBounds.Builder builder = new LatLngBounds.Builder();
         for(int i =0; i< list.size();i++){
-            if(list.get(i).getToken()==id){
+
+            if(list.get(i).getToken().equals(id)){
+                for(int num =0; num<list.get(i).userList.size();num++){
+
+
+                    String status = String.valueOf(list.get(i).userList.get(num).getActive());
+                    if(Math.floor(list.get(i).userList.get(num).getLat())==0&&Math.floor(list.get(i).userList.get(num).getLon())==0){
+                        status = "0";
+                    }
+                    if(list.get(i).userList.get(num).getCryptID().equals(User.getCryptId())){
+                        status = status + " (you)";
+                    }
+                    System.out.println("USER: " + list.get(i).userList.get(num).getUsername() + " STATUS: " + status + " LAT: " + list.get(i).userList.get(num).getLat() + " LON: " + list.get(i).userList.get(num).getLon());
+                }
                 for(int j =0; j< list.get(i).userList.size();j++){
                     double lat = list.get(i).userList.get(j).getLat();
                     double lon = list.get(i).userList.get(j).getLon();
                     LatLng location =  new LatLng(lat,lon);
 
-                    home.remove();
+
+
+
                     if(markerMap.get(list.get(i).userList.get(j).getCryptID())==null) {
-                        markerMap.put(list.get(i).userList.get(j).getCryptID(), map.addMarker(new MarkerOptions().snippet(list.get(i).userList.get(j).getCryptID()).position(location).title(list.get(i).userList.get(j).getUsername())));
+                        if(list.get(i).userList.get(j).getCryptID().equals(User.getCryptId())){
+                            markerMap.put(list.get(i).userList.get(j).getCryptID(), map.addMarker(new MarkerOptions().icon(BitmapDescriptorFactory.fromResource(R.drawable.mapiconhome_32)).snippet(list.get(i).userList.get(j).getCryptID()).position(location).title("You")));
+                        }else {
+                            markerMap.put(list.get(i).userList.get(j).getCryptID(), map.addMarker(new MarkerOptions().icon(BitmapDescriptorFactory.fromResource(R.drawable.mapicon_32)).snippet(list.get(i).userList.get(j).getCryptID()).position(location).title(list.get(i).userList.get(j).getUsername())));
+
+                        }
                         markerMap.get(list.get(i).userList.get(j).getCryptID()).setVisible(false);
                     }
 
 
                     markerMap.get(list.get(i).userList.get(j).getCryptID()).setPosition(location);
                     if((!(Math.floor(lon)==0&&Math.floor(lat)==0))&&list.get(i).userList.get(j).getActive()==1){
-                        if(list.get(i).userList.get(j).getCryptID()==User.getCryptId()){
-                            //set home marker
-
-                        }
                         markerMap.get(list.get(i).userList.get(j).getCryptID()).setVisible(true);
                         builder.include(markerMap.get(list.get(i).userList.get(j).getCryptID()).getPosition());
                         System.out.println("-----MARKER FOR " + list.get(i).userList.get(j).getUsername() + " AT " + location.latitude+","+location.longitude + " ADDED-----");
+                        markerCount++;
+                        tempLat = lat;
+                        tempLon = lon;
                     }
-
 
 
 
@@ -104,22 +131,27 @@ public class KartauMapFragment extends Fragment {
             }
         }
 
-        home.setPosition(new LatLng(TrackingInformation.getLat(), TrackingInformation.getLon()));
-        builder.include(home.getPosition());
-        LatLngBounds bounds = builder.build();
-        int padding = 30; // offset from edges of the map in pixels
 
 
-        if(firstLoad){
-            CameraUpdate cameraUpdate;
-            if(bounds.northeast.latitude-bounds.southwest.latitude<0.05) {
-                cameraUpdate = CameraUpdateFactory.newLatLngZoom(new LatLng(TrackingInformation.getLat(), TrackingInformation.getLon()), 15);
-            }else {
-                cameraUpdate = CameraUpdateFactory.newLatLngBounds(bounds, padding);
+        try {
+            if (firstLoad) {
+                LatLngBounds bounds = builder.build();
+                int padding = 30; // offset from edges of the map in pixels
+                CameraUpdate cameraUpdate;
+                if (/*bounds.northeast.latitude - bounds.southwest.latitude < 0.05*/markerCount==1) {
+                    cameraUpdate = CameraUpdateFactory.newLatLngZoom(new LatLng(tempLat, tempLon), 15);
+                } else {
+                    cameraUpdate = CameraUpdateFactory.newLatLngBounds(bounds, padding);
+                }
+                map.animateCamera(cameraUpdate);
+                firstLoad = false;
+
             }
-            map.animateCamera(cameraUpdate);
-            firstLoad = false;
+        }catch (Exception e){
+            e.printStackTrace();
+            firstLoad = true;
         }
+
 
 
     }
@@ -182,17 +214,16 @@ public class KartauMapFragment extends Fragment {
 
         map = mapView.getMap();
         map.getUiSettings().setMyLocationButtonEnabled(false);
-        map.setMyLocationEnabled(true);
+        map.setMyLocationEnabled(false);
 
 
         MapsInitializer.initialize(this.getActivity());
 
-        home = map.addMarker(new MarkerOptions().snippet("home").position(new LatLng(TrackingInformation.getLat(),TrackingInformation.getLon())).title("You"));
         CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(new LatLng(TrackingInformation.getLat(),TrackingInformation.getLon()), 10);
         //map.animateCamera(cameraUpdate);
         map.moveCamera(cameraUpdate);
 
-
+        updateStatus();
 
         return v;
     }

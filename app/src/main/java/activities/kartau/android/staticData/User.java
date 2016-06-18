@@ -3,6 +3,7 @@ package activities.kartau.android.staticdata;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Collections;
 import java.util.LinkedList;
 
 import activities.kartau.android.httpresources.jsonparser.GetInfoParser;
@@ -109,6 +110,7 @@ public class User {
 
             }
         }
+        Collections.sort(groupList, Groups.GroupNameComparator);
         User.groups = groupList;
     }
 

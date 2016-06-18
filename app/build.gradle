@@ -12,8 +12,8 @@ android {
         applicationId "activities.kartau.android.gui"
         minSdkVersion 15
         targetSdkVersion 22
-        versionCode 1
-        versionName "Alpha 1.0"
+        versionCode 14
+        versionName "Release 1.11"
     }
     buildTypes {
         release {

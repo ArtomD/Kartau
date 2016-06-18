@@ -63,7 +63,7 @@ public class CommonValues {
     public static final String MAP_LAYOUT_BACKGROUND_COLOR = "#f2cc5a";
 
     /*BROADCAST MAPS ANIMATION SETUP*/
-    public static final int MAP_LAYOUT_HEIGHT = 300;
+    public static int MAP_LAYOUT_HEIGHT = 300;
     public static final int RESIZE_ANIMATION_GROW = 650;
     public static final int RESIZE_ANIMATON_SHRINK = 450;
 }

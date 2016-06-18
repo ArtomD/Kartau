@@ -24,7 +24,7 @@
             android:gravity="center"
             android:text="@string/about_text"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textColor="#78786E" />
+            android:textColor="#000000" />
 
         <Button
             android:id="@+id/aboutAboutPageButton"

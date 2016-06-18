@@ -55,6 +55,7 @@ public class Login extends ActionBarActivity {
         locationTracker = new Intent(this, LocationTracker.class);
 
         if((RW.readData(CommonValues.IS_LOGIN)).equals(CommonValues.TRUE)) {
+
             try {
                 //run the login method with arguments from internal storage
                 new HTTPRequestTask(this).execute(RW.readData(CommonValues.USERNAME), RW.readData(CommonValues.MANAGER_USERNAME), RW.readData(CommonValues.PASSWORD));
@@ -101,12 +102,30 @@ public class Login extends ActionBarActivity {
 
     @Override
     public void onRestart(){
-        super.onRestart();
+
+
         //hide the logout button if no user is logged in when activity is visited from another activity
-        if((RW.readData(CommonValues.IS_LOGIN)).equals(CommonValues.FALSE)) {
-            hideOption(R.id.action_logout);
-        }
+//        if((RW.readData(CommonValues.IS_LOGIN)).equals(CommonValues.FALSE)) {
+//            hideOption(R.id.action_logout);
+//        }
+        super.onRestart();
+//        if((RW.readData(CommonValues.IS_LOGIN)).equals(CommonValues.TRUE)) {
+//            try {
+//                onBackPressed();
+//
+//            } catch (Exception e) {
+//
+//            }
+//        }
     }
+
+//    @Override
+//    public void onBackPressed(){
+//        Intent startMain = new Intent(Intent.ACTION_MAIN);
+//        startMain.addCategory(Intent.CATEGORY_HOME);
+//        startMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//        startActivity(startMain);
+//    }
 
     @Override
     public void onDestroy(){
@@ -128,6 +147,15 @@ public class Login extends ActionBarActivity {
         startActivity(intent);
     }
 
+    public void goWebsiteLogin(){
+        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.kartau.com/login"));
+        startActivity(browserIntent);
+    }
+
+    public void goResetPassword(){
+        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.kartau.com/login"));
+        startActivity(browserIntent);
+    }
 
     //runs the login method
     public void goLogin(View view){

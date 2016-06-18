@@ -28,11 +28,12 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
+import java.util.TreeMap;
 
 import activities.kartau.android.httpresources.Controller;
+import activities.kartau.android.services.LocationUpdater;
 import activities.kartau.android.staticdata.CommonValues;
 import activities.kartau.android.staticdata.Groups;
 import activities.kartau.android.staticdata.Session;
@@ -50,8 +51,12 @@ public class BroadcastMaps extends ActionBarActivity implements KartauMapFragmen
     private SeekBar intervalBar;
     private TextView intervalTracking;
     private Menu menu;
-    HashMap<String, Integer> tokensToID = new HashMap<String, Integer>();
-    HashMap<String, Boolean> mapStatus = new HashMap<String, Boolean>();
+    LinkedHashMap<String, Integer> tokensToID = new LinkedHashMap<String, Integer>();
+    LinkedHashMap<String, Boolean> mapStatus = new LinkedHashMap<String, Boolean>();
+    Intent locationUpdater;
+
+
+
 
     private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
         @Override
@@ -72,6 +77,10 @@ public class BroadcastMaps extends ActionBarActivity implements KartauMapFragmen
         this.RW = new ReadWrite(this.getApplicationContext());
         User.setRW(RW);
         Session.setRW(RW);
+        Session.setRunThread(true);
+
+        locationUpdater = new Intent(this, LocationUpdater.class);
+
         //to clear internal memory
         //RW.storeData(CommonValues.GROUPS,"");
         //run the HTTP request to get groups for user
@@ -149,8 +158,13 @@ public class BroadcastMaps extends ActionBarActivity implements KartauMapFragmen
 
     @Override
     public void onResume() {
-        super.onResume();
 
+        CommonValues.MAP_LAYOUT_HEIGHT = getWindowManager().getDefaultDisplay().getHeight()/3;
+        if(!Session.getRunThread()) {
+            Session.setRunThread(true);
+            stopService(this.locationUpdater);
+            startService(this.locationUpdater);
+        }
         try{
             updateStatus();
         }catch(Exception e){
@@ -162,27 +176,51 @@ public class BroadcastMaps extends ActionBarActivity implements KartauMapFragmen
             AlertBuilder.makeNew(this,20);
             new AlertDialog.Builder(this);
         }
+        super.onResume();
     }
     @Override
     protected void onPause() {
         // Unregister since the activity is not visible
+        removeFragment();
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
+        super.onPause();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+    }
+
+    @Override
+    protected void onDestroy() {
+        Session.setRunThread(false);
+        stopService(locationUpdater);
+        super.onDestroy();
+    }
+
+    private void removeFragment(){
         LinkedList<Groups> list = User.getGroups();
         LinearLayout frameLayoutView = (LinearLayout) findViewById(R.id.mapsMapLayoutInsideWrapper);
         try {
-            for (int j = 0; j < list.size(); j++) {
+            int i =0;
+            for(LinkedHashMap.Entry<String,Boolean> entry : mapStatus.entrySet()) {
 
-                System.out.println("J = " + j);
-                View view = frameLayoutView.getChildAt(j);
-                ToggleButton exteriorButton = (ToggleButton) view.findViewById(tokensToID.get(list.get(j).getToken()));
-                View exteriorLayout = ((View) view.getParent()).findViewById(tokensToID.get(list.get(j).getToken()) + 1000);
-                if(mapStatus.get(list.get(j).getToken()))
-                    turnOffMap(exteriorButton, exteriorLayout, j,list);
+                if(entry.getValue()){
+                    System.out.println("TURNING OFF FRAGMENT: " + entry.getKey());
+                    System.out.println("I: " + i);
+                    System.out.println("BUTTON ID: " + tokensToID.get(list.get(i).getToken()));
+                    System.out.println("LAYOUT ID: " + (tokensToID.get(list.get(i).getToken()) + 1000));
+                    View view = (frameLayoutView.getChildAt(i));
+                    ToggleButton exteriorButton = (ToggleButton) view.findViewById(tokensToID.get(list.get(i).getToken()));
+                    View exteriorLayout = ((View) view.getParent()).findViewById(tokensToID.get(list.get(i).getToken()) + 1000);
+                    turnOffMap(exteriorButton, exteriorLayout, i,list);
+                }
+                i++;
             }
+
         }catch(Exception e){
 
         }
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
-        super.onPause();
     }
 
     public void updateStatus(){
@@ -246,6 +284,16 @@ public class BroadcastMaps extends ActionBarActivity implements KartauMapFragmen
     }
 
     @Override
+    public void onBackPressed(){
+//        super.onBackPressed();
+//        overridePendingTransition(0, 0);
+        Intent startMain = new Intent(Intent.ACTION_MAIN);
+        startMain.addCategory(Intent.CATEGORY_HOME);
+        startMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(startMain);
+    }
+
+    @Override
     public void onArticleSelected(int position) {
 
     }
@@ -280,8 +328,15 @@ public class BroadcastMaps extends ActionBarActivity implements KartauMapFragmen
         protected void onPostExecute(Integer error) {
             //get the group list
             LinkedList<Groups> list = User.getGroups();
-            tokensToID = new HashMap();
-            mapStatus = new HashMap();
+            int counter =0;
+            while(counter<list.size()){
+                if(!list.get(counter).getStatus().equals("1"))
+                    list.remove(counter);
+                else
+                    counter++;
+            }
+            tokensToID = new LinkedHashMap();
+            mapStatus = new LinkedHashMap();
             for(int i=0; i<list.size();i++) {
                 tokensToID.put(list.get(i).getToken(), i);
                 mapStatus.put(list.get(i).getToken(), false);
@@ -347,7 +402,7 @@ public class BroadcastMaps extends ActionBarActivity implements KartauMapFragmen
     }
 
 
-    private void setupExpandingMapLayout(LinkedList<Groups> list, int i,HashMap<String, Integer> mapping){
+    private void setupExpandingMapLayout(LinkedList<Groups> list, int i,LinkedHashMap<String, Integer> mapping){
 
         LinearLayout layout = (LinearLayout) findViewById(R.id.expandingMapLayout);
         layout.setId(mapping.get(list.get(i).getToken()) + 1000);
@@ -357,7 +412,7 @@ public class BroadcastMaps extends ActionBarActivity implements KartauMapFragmen
 
     }
 
-    private void setupMainButton(LinkedList<Groups> list, int i,final HashMap<String, Integer> mapping){
+    private void setupMainButton(LinkedList<Groups> list, int i,final LinkedHashMap<String, Integer> mapping){
         ToggleButton button = (ToggleButton) findViewById(R.id.mapsDisplayButton);
         button.setId(mapping.get(list.get(i).getToken()));
         button.setText(list.get(i).getName());
@@ -404,6 +459,11 @@ public class BroadcastMaps extends ActionBarActivity implements KartauMapFragmen
 
                                               mapStatus.put(list.get(i).getToken(), true);
 
+                                              System.out.println("TURNING ON FRAGMENT: " + (list.get(i).getToken()));
+                                              System.out.println("I: " + i);
+                                              System.out.println("BUTTON ID: " + tokensToID.get(list.get(i).getToken()));
+                                              System.out.println("LAYOUT ID: " + (tokensToID.get(list.get(i).getToken()) + 1000));
+
                                           } else {
                                               turnOffMap(button, layout, i, list);
                                           }
@@ -428,7 +488,7 @@ public class BroadcastMaps extends ActionBarActivity implements KartauMapFragmen
         mapStatus.put(list.get(i).getToken(), false);
     }
 
-    private void setupOnOffButton(LinkedList<Groups> list, int i, String groupList,final HashMap<String, Integer> mapping){
+    private void setupOnOffButton(LinkedList<Groups> list, int i, String groupList,final LinkedHashMap<String, Integer> mapping){
         ToggleButton button = (ToggleButton) findViewById(R.id.mapsOnOffButton);
         button.setId(mapping.get(list.get(i).getToken()) + 2000);
         setButtonColor(button, CommonValues.INACTIVE_TEXT_COLOR, CommonValues.INACTIVE_BACKGROUND_COLOR);
@@ -467,7 +527,7 @@ public class BroadcastMaps extends ActionBarActivity implements KartauMapFragmen
         );
     }
 
-    private void setupClearButton(LinkedList<Groups> list, int i, final BroadcastMaps activity, final HashMap<String, Integer> mapping){
+    private void setupClearButton(LinkedList<Groups> list, int i, final BroadcastMaps activity, final LinkedHashMap<String, Integer> mapping){
         Button button = (Button) findViewById(R.id.mapsClearButton);
         button.setId(mapping.get(list.get(i).getToken()) + 3000);
         setButtonColor(button, CommonValues.INACTIVE_TEXT_COLOR, CommonValues.INACTIVE_BACKGROUND_COLOR);

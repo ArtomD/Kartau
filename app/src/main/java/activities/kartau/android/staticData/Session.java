@@ -16,6 +16,8 @@ public class Session {
     private static final Object lockStatus = new Object();
     private static final Object lockProvider = new Object();
     private static ReadWrite RW;
+    private static boolean runThread = true;
+    private static final Object lockRunThread = new Object();
 
     public Session(ReadWrite RW){
         Session.RW = RW;
@@ -39,6 +41,7 @@ public class Session {
     public static long getUpdate(){ return update; }
     public static String getStatus(){ synchronized (lockStatus){ return status;} }
     public static boolean getProvider(){ synchronized (lockProvider){ return provider;} }
+    public static boolean getRunThread(){ synchronized (lockRunThread){ return runThread;} }
 
     public static void clearSession(){
         Session.token ="";
@@ -53,6 +56,9 @@ public class Session {
 
     public static void setProvider(boolean provider){
         synchronized (lockProvider) {Session.provider = provider;}
+    }
+    public static void setRunThread(boolean runThread){
+        synchronized (lockRunThread) {Session.runThread = runThread;}
     }
 
 }

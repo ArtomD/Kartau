@@ -280,6 +280,12 @@ public class Profile extends ActionBarActivity{
         overridePendingTransition(0, 0);
     }
 
+    @Override
+    public void onBackPressed(){
+        super.onBackPressed();
+        overridePendingTransition(0, 0);
+    }
+
 
 
     //async thread to update user info

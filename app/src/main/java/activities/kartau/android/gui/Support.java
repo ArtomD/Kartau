@@ -153,6 +153,12 @@ public class Support extends ActionBarActivity {
         overridePendingTransition(0, 0);
     }
 
+    @Override
+    public void onBackPressed(){
+        super.onBackPressed();
+        overridePendingTransition(0, 0);
+    }
+
     public void goWebsiteContactUs (View view) {
         Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.kartau.com/contact"));
         startActivity(browserIntent);

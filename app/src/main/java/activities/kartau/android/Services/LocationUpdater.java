@@ -54,7 +54,7 @@ public class LocationUpdater extends Service {
         thread = new Thread() {
             @Override
             public void run() {
-                while (true)
+                while (Session.getRunThread())
                 {
                     //get the list of groups that are active to receive updates from this user
                     //record the current time
@@ -195,17 +195,22 @@ public class LocationUpdater extends Service {
                 .setContentTitle(msg)
                 .setTicker(msgAlert)
                 .setContentText(msgText);
-        if(msg.equals("Connection Established"))
-            mBuilder.setSmallIcon(R.drawable.statuson);
-        else
-            mBuilder.setSmallIcon(R.drawable.statusproblem);
-
-
         mBuilder.setContentIntent(notificIntent);
         mBuilder.setDefaults(0);
         mBuilder.setSound(null);
         mBuilder.setAutoCancel(false);
         mBuilder.setOngoing(false);
+        if(msg.equals("Connection Established")) {
+            mBuilder.setSmallIcon(R.drawable.logobw_512);
+            mBuilder.setColor(getResources().getColor(R.color.statusOn));
+        }
+        else{
+            mBuilder.setSmallIcon(R.drawable.logobw_512);
+            mBuilder.setColor(getResources().getColor(R.color.statusOff));
+        }
+
+
+
         //mBuilder.setDeleteIntent(notificIntent);
 
         NotificationManager mNotificationManager = (NotificationManager) context.getSystemService(context.NOTIFICATION_SERVICE);

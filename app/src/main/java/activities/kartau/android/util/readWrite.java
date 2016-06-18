@@ -22,6 +22,8 @@ public class ReadWrite {
     //it takes two strings, the key which is the name of the file being written and the value
     public void storeData(String key, String value){
         FileOutputStream fos = null;
+        if(value==null)
+            value = "";
         try {
             fos = context.openFileOutput(key, Context.MODE_PRIVATE);
             System.out.println("VALUES: " + value);
