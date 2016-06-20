@@ -1,7 +1,5 @@
 package activities.kartau.android.httpresources;
 
-import android.graphics.Color;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
@@ -119,9 +117,12 @@ public class Controller {
     private int getSession() {
         if ((Session.getExpires() - System.currentTimeMillis() ) < CommonValues.MILLISECONDS_TEN_MINUTES) {
             System.out.println("SESSION EXPIRED, GETTING NEW SESSION");
+            System.out.println("USERNAME: " + User.getUsername());
+            System.out.println("MANAGER: " + User.getDevice());
+            System.out.println("PASSWORD: " + User.getPassword());
             LinkedHashMap<String, String> params = new LinkedHashMap<String, String>();
             params.put(CommonValues.USERNAME, User.getUsername());  //username)
-            params.put(CommonValues.MANAGER_USERNAME, User.getManagerUsername());  //email)
+            params.put(CommonValues.DEVICE, User.getDevice());  //email)
             params.put(CommonValues.PASSWORD, User.getPassword()); //password)
             return newSession(params);
         }

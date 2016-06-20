@@ -22,7 +22,7 @@ public class CommonValues {
     public static final String FIRST_NAME = "firstName";
     public static final String LAST_NAME = "lastName";
     public static final String EMAIL = "email";
-    public static final String MANAGER_USERNAME = "managerEmail";
+    public static final String DEVICE = "managerEmail";
     public static final String PASSWORD = "password";
     public static final String USER_CRYPTID = "cryptId";
     public static final String UPDATE_INTERVAL = "updateInterval";

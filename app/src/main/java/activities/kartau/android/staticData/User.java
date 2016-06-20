@@ -1,8 +1,5 @@
 package activities.kartau.android.staticdata;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.util.Collections;
 import java.util.LinkedList;
 
@@ -16,14 +13,14 @@ import activities.kartau.android.util.ReadWrite;
 public class User {
     static private String
             username,
-            managerUsername,
+            device,
             email,
             password,
             firstName,
             lastName,
             cryptId;
-    static private boolean mapsActive = false;
-    static private boolean forceMap = false;
+    static private boolean mapsActive = true;
+    static private boolean forceMap = true;
 
     private static final Object lockInterval = new Object();
     private static final Object lockMapsActive = new Object();
@@ -50,11 +47,13 @@ public class User {
     public static void setLastName(String lastName){
         User.lastName = lastName;
     }
-    public static void setManagerUsername(String managerUsername) { User.managerUsername = managerUsername; }
+    public static void setDevice(String device) { User.device = device; }
     public static void setGroups(LinkedList<Groups> groups) { User.groups = groups; }
     public static void setCryptId(String cryptId) { User.cryptId = cryptId; }
 
     public static  String getUsername(){
+        if(User.username==null  || User.username.equals(""))
+            User.username = RW.readData(CommonValues.USERNAME);
         return username;
     }
     public static void setInterval(int interval) { synchronized (lockInterval){ User.interval=interval;} }
@@ -80,10 +79,10 @@ public class User {
             User.lastName = RW.readData(CommonValues.LAST_NAME);
         return lastName;
     }
-    public static String  getManagerUsername() {
-        if(User.managerUsername==null  || User.managerUsername.equals(""))
-            User.managerUsername = RW.readData(CommonValues.MANAGER_USERNAME);
-        return managerUsername; }
+    public static String getDevice() {
+        if(User.device ==null  || User.device.equals(""))
+            User.device = RW.readData(CommonValues.DEVICE);
+        return device; }
 
     public static LinkedList<Groups> getGroups() {
         return groups; }
@@ -131,7 +130,7 @@ public class User {
     }
 
     public static void updateUser(GetInfoParser user){
-        User.username = user.content.strUsername;
+        User.device = user.content.strUsername;
         User.firstName = user.content.strFirstName;
         User.lastName = user.content.strLastName;
         User.email = user.content.strEmail;
@@ -144,13 +143,13 @@ public class User {
         RW.storeData(CommonValues.PASSWORD, User.password);
         RW.storeData(CommonValues.FIRST_NAME, User.firstName);
         RW.storeData(CommonValues.LAST_NAME, User.lastName);
-        RW.storeData(CommonValues.MANAGER_USERNAME, User.managerUsername);
+        RW.storeData(CommonValues.DEVICE, User.device);
         RW.storeData(CommonValues.UPDATE_INTERVAL, String.valueOf(User.interval));
         RW.storeData(CommonValues.USER_CRYPTID, cryptId);
     }
     //this method clears the internal and java memory regarding user profile and groups information
     public static void clearUser(ReadWrite RW) {
-        User.managerUsername = "";
+        User.device = "";
         User.username = "";
         User.password = "";
         User.email = "";
@@ -161,7 +160,7 @@ public class User {
 
         RW.storeData(CommonValues.USERNAME, "");
         RW.storeData(CommonValues.PASSWORD, "");
-        RW.storeData(CommonValues.MANAGER_USERNAME, "");
+        RW.storeData(CommonValues.DEVICE, "");
         RW.storeData(CommonValues.GROUPS, "");
         RW.storeData(CommonValues.UPDATE_INTERVAL, "");
         RW.storeData(CommonValues.USER_CRYPTID, "");

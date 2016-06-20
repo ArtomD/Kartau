@@ -121,12 +121,14 @@ public class BroadcastMaps extends ActionBarActivity implements KartauMapFragmen
 
 
 
+
         });
 
 
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(false);
         //actionBar.setDisplayShowTitleEnabled(false);
+
 
 
 

@@ -1,9 +1,7 @@
 package activities.kartau.android.gui;
 
-import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.AsyncTask;
@@ -17,14 +15,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.LinkedHashMap;
 
 import activities.kartau.android.httpresources.Controller;
-import activities.kartau.android.services.LocationTracker;
-import activities.kartau.android.services.LocationUpdater;
 import activities.kartau.android.staticdata.CommonValues;
 import activities.kartau.android.staticdata.Session;
 import activities.kartau.android.staticdata.User;
@@ -64,7 +59,7 @@ public class Profile extends ActionBarActivity{
         TextView lastName = (TextView)findViewById(R.id.profileLastNameText);
         TextView email = (TextView)findViewById(R.id.profileEmailText);
         //set the user profile infomation from memory
-        username.setText(User.getManagerUsername());
+        username.setText(User.getDevice());
         firstName.setText(User.getFirstName());
         lastName.setText(User.getLastName());
         email.setText(User.getEmail());
@@ -129,7 +124,7 @@ public class Profile extends ActionBarActivity{
         TextView lastName = (TextView)findViewById(R.id.profileLastNameText);
         TextView email = (TextView)findViewById(R.id.profileEmailText);
 
-        username.setText(User.getManagerUsername(), TextView.BufferType.EDITABLE);
+        username.setText(User.getDevice(), TextView.BufferType.EDITABLE);
         firstName.setText(User.getFirstName(),TextView.BufferType.EDITABLE);
         lastName.setText(User.getLastName(), TextView.BufferType.EDITABLE);
         email.setText(User.getEmail(), TextView.BufferType.EDITABLE);
@@ -169,7 +164,7 @@ public class Profile extends ActionBarActivity{
         email.setVisibility(View.GONE);
         buttonEdit.setVisibility(View.GONE);
 
-        usernameEdit.setText(User.getManagerUsername(), TextView.BufferType.EDITABLE);
+        usernameEdit.setText(User.getDevice(), TextView.BufferType.EDITABLE);
         firstNameEdit.setText(User.getFirstName(), TextView.BufferType.EDITABLE);
         lastNameEdit.setText(User.getLastName(), TextView.BufferType.EDITABLE);
         emailEdit.setText(User.getEmail(), TextView.BufferType.EDITABLE);

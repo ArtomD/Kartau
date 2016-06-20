@@ -47,6 +47,11 @@ public class LocationUpdater extends Service {
     @Override
     public void onCreate()
     {
+
+    }
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId){
         Notification notification = new Notification();
         createNotification(this, "Connection Established", "Kartau is running", "Connected to server");
         startForeground(1, notification);
@@ -61,7 +66,7 @@ public class LocationUpdater extends Service {
                     //record the current time
                     long time = System.currentTimeMillis();
 
-                    
+
                     LinkedHashMap<String, String> params = new LinkedHashMap<String, String>();
                     Controller comm = new Controller();
                     if(User.getForceMap() || User.getMapsActive()) {
@@ -121,6 +126,7 @@ public class LocationUpdater extends Service {
 
 
 
+        return super.onStartCommand(intent, flags, startId);
     }
 
     @Override

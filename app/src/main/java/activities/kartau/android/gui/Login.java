@@ -61,7 +61,7 @@ public class Login extends ActionBarActivity {
 
             try {
                 //run the login method with arguments from internal storage
-                new HTTPRequestTask(this).execute(RW.readData(CommonValues.USERNAME), RW.readData(CommonValues.MANAGER_USERNAME), RW.readData(CommonValues.PASSWORD));
+                new HTTPRequestTask(this).execute(RW.readData(CommonValues.USERNAME), RW.readData(CommonValues.DEVICE), RW.readData(CommonValues.PASSWORD));
 
             } catch (java.lang.NullPointerException e) {
                 e.printStackTrace();
@@ -157,7 +157,7 @@ public class Login extends ActionBarActivity {
     }
 
     public void goWebsiteLogin(View view){
-        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.kartau.com/login"));
+        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.kartau.com/register"));
         startActivity(browserIntent);
     }
 
@@ -213,12 +213,12 @@ public class Login extends ActionBarActivity {
             //build arguments for HTTP call in LinkedHashMap
             LinkedHashMap<String, String> params = new LinkedHashMap<String, String>();
             params.put(CommonValues.USERNAME, data[0]);  //username)
-            params.put(CommonValues.MANAGER_USERNAME, data[1]);  //manager_username)
+            params.put(CommonValues.DEVICE, data[1]);  //manager_username)
             params.put(CommonValues.PASSWORD, data[2]); //password)
             //set the users password and manager username
             //the user username is set when his account information is populated
             User.setUsername(data[0]);
-            User.setManagerUsername(data[1]);
+            User.setDevice(data[1]);
             User.setPassword(data[2]);
             //make an instance of the HTTP controller
             Controller comm = new Controller();
