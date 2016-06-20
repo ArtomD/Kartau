@@ -50,7 +50,11 @@
                             <!--   Connection Failed   -->
     <string name="popup_connection_failed_title">Unable to Connect to the Server</string>
     <string name="popup_connection_failed_message">The server is either unavailable or you have no internet connection</string>
-                            <!--   Incorrect Login   -->
+                            <!--   Connection Failed   -->
+    <string name="popup_authentication_failure_title">Credentials Incorrect</string>
+    <string name="popup_authentication_message">No Account with those credentials exists.</string>
+
+    <!--   Incorrect Login   -->
     <string name="popup_incorrect_login_title">Incorrect Login Information</string>
     <string name="popup_incorrect_login_message">Please re-enter your login information</string>
                             <!--   Username exists   -->

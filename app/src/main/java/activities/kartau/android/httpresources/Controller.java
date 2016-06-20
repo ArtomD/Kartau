@@ -46,6 +46,9 @@ public class Controller {
             }
             User.updateGroups(groups);
             System.out.println("GROUP SIZE: " + User.getGroups().size());
+            if(groups.type!=1){
+                return groups.content[0].code;
+            }
             return groups.type;
         }
         return errorCode;
@@ -63,6 +66,9 @@ public class Controller {
                 return CommonValues.FAIL;
             }
             User.updateUser(user);
+            if(user.type!=1){
+                return user.content.code;
+            }
             return user.type;
         }
         return errorCode;
@@ -81,7 +87,9 @@ public class Controller {
                 return CommonValues.FAIL;
             }
             User.updateUser(user);
-
+            if(user.type!=1){
+                return user.content.code;
+            }
             return user.type;
         }
         return errorCode;
@@ -101,6 +109,9 @@ public class Controller {
         Session.updateSession(session);
         System.out.println("SESSION TOKEN: " + Session.getToken());
         System.out.println("SESSION EXPIRES: " + Session.getExpires());
+        if(session.type!=1){
+            return session.content.code;
+        }
         return session.type;
     }
 
@@ -134,6 +145,7 @@ public class Controller {
                 return CommonValues.FAIL;
             }
             System.out.println("Error code is "+errorCode);
+
             return location.type;
         }
 

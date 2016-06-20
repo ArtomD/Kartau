@@ -22,8 +22,12 @@ public class User {
             firstName,
             lastName,
             cryptId;
+    static private boolean mapsActive = false;
+    static private boolean forceMap = false;
 
     private static final Object lockInterval = new Object();
+    private static final Object lockMapsActive = new Object();
+    private static final Object lockForceMap = new Object();
     static private int interval = CommonValues.MIN_INTERVAL;
 
     static private LinkedList<Groups> groups;
@@ -54,6 +58,8 @@ public class User {
         return username;
     }
     public static void setInterval(int interval) { synchronized (lockInterval){ User.interval=interval;} }
+    public static void setMapsActive(boolean mapsActive) { synchronized (lockMapsActive){ User.mapsActive=mapsActive;} }
+    public static void setForceMap(boolean forceMap) { synchronized (lockForceMap){ User.forceMap=forceMap;} }
 
 
     public static  String getEmail(){
@@ -88,6 +94,16 @@ public class User {
     public static int getInterval(){
         synchronized (lockInterval){
             return interval; }
+    }
+
+    public static boolean getMapsActive(){
+        synchronized (lockMapsActive){
+            return mapsActive; }
+    }
+
+    public static boolean getForceMap(){
+        synchronized (lockForceMap){
+            return forceMap; }
     }
 
     public static void updateGroups(PullGroupsParser groups){

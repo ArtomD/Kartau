@@ -54,6 +54,9 @@ public class Login extends ActionBarActivity {
         locationUpdater = new Intent(this, LocationUpdater.class);
         locationTracker = new Intent(this, LocationTracker.class);
 
+        Session.setTracker(locationTracker);
+        Session.setUpdater(locationUpdater);
+
         if((RW.readData(CommonValues.IS_LOGIN)).equals(CommonValues.TRUE)) {
 
             try {
@@ -134,6 +137,12 @@ public class Login extends ActionBarActivity {
         super.onDestroy();
     }
 
+    public void onBackPressed(){
+        Intent startMain = new Intent(Intent.ACTION_MAIN);
+        startMain.addCategory(Intent.CATEGORY_HOME);
+        startMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(startMain);
+    }
 
     //go to the about page
     public void goAbout() {
@@ -147,12 +156,12 @@ public class Login extends ActionBarActivity {
         startActivity(intent);
     }
 
-    public void goWebsiteLogin(){
+    public void goWebsiteLogin(View view){
         Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.kartau.com/login"));
         startActivity(browserIntent);
     }
 
-    public void goResetPassword(){
+    public void goResetPassword(View view){
         Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.kartau.com/login"));
         startActivity(browserIntent);
     }
@@ -242,8 +251,11 @@ public class Login extends ActionBarActivity {
                 //record the state as logged in
                 RW.storeData(CommonValues.IS_LOGIN, CommonValues.TRUE);
 
-                startService(activity.locationTracker);
-                startService(activity.locationUpdater);
+                startService(Session.getTracker());
+                startService(Session.getUpdater());
+                if(!Session.getRunThread()){
+                    Session.setRunThread(true);
+                }
 
                 Intent intent = new Intent(activity,BroadcastMaps.class);
                 startActivity(intent);
@@ -267,12 +279,11 @@ public class Login extends ActionBarActivity {
                     actionBar.show();
                 }
 
-                else {
-                    //if get session failed display error message
-                    System.out.println("ERROR CODE: " + error);
-                    AlertBuilder.makeNew(activity,error);
+                //if get session failed display error message
+                System.out.println("ERROR CODE: " + error);
+                AlertDialog warning = AlertBuilder.makeNew(activity, error);
 
-                }
+
             }
         }
     }

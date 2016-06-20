@@ -33,6 +33,7 @@ import java.util.LinkedList;
 import java.util.TreeMap;
 
 import activities.kartau.android.httpresources.Controller;
+import activities.kartau.android.services.LocationTracker;
 import activities.kartau.android.services.LocationUpdater;
 import activities.kartau.android.staticdata.CommonValues;
 import activities.kartau.android.staticdata.Groups;
@@ -117,6 +118,9 @@ public class BroadcastMaps extends ActionBarActivity implements KartauMapFragmen
                 intervalTracking.setText("Set Notification Interval (" + (progress + CommonValues.MIN_INTERVAL) + " seconds)");
 
             }
+
+
+
         });
 
 
@@ -158,12 +162,13 @@ public class BroadcastMaps extends ActionBarActivity implements KartauMapFragmen
 
     @Override
     public void onResume() {
-
+        User.setForceMap(true);
+        User.setMapsActive(true);
         CommonValues.MAP_LAYOUT_HEIGHT = getWindowManager().getDefaultDisplay().getHeight()/3;
         if(!Session.getRunThread()) {
             Session.setRunThread(true);
-            stopService(this.locationUpdater);
-            startService(this.locationUpdater);
+            startService(Session.getUpdater());
+            startService(Session.getTracker());
         }
         try{
             updateStatus();
@@ -181,6 +186,7 @@ public class BroadcastMaps extends ActionBarActivity implements KartauMapFragmen
     @Override
     protected void onPause() {
         // Unregister since the activity is not visible
+        User.setMapsActive(false);
         removeFragment();
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
         super.onPause();
@@ -194,7 +200,7 @@ public class BroadcastMaps extends ActionBarActivity implements KartauMapFragmen
     @Override
     protected void onDestroy() {
         Session.setRunThread(false);
-        stopService(locationUpdater);
+        stopService(Session.getUpdater());
         super.onDestroy();
     }
 
@@ -274,6 +280,9 @@ public class BroadcastMaps extends ActionBarActivity implements KartauMapFragmen
         RW.storeData(CommonValues.IS_LOGIN, CommonValues.FALSE);
         User.clearUser(RW);
         Session.clearSession();
+        stopService(Session.getTracker());
+        stopService(Session.getUpdater());
+        Session.setRunThread(false);
         goNextActivity(Login.class);
     }
 

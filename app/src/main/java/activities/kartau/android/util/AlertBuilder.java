@@ -24,11 +24,13 @@ public class AlertBuilder {
             {R.string.popup_invalid_username_format_title,R.string.popup_invalid_username_format_message},
             {R.string.popup_unknown_error_title,R.string.popup_unkown_error_message},
             {R.string.popup_GPS_OFF_title,R.string.popup_GPS_OFF_message},
-            {R.string.popup_remove_from_map_title,R.string.popup_remove_from_map_message}
+            {R.string.popup_remove_from_map_title,R.string.popup_remove_from_map_message},
+            {R.string.popup_authentication_failure_title,R.string.popup_authentication_message}
     };
 
     static final Map<Integer , int[]> ERRORS = new HashMap<Integer , int[]>() {{
         put(0,    errorCodes[0]);
+
         put(101, errorCodes[1]);
         put(102,   errorCodes[2]);
         put(104,   errorCodes[3]);
@@ -38,10 +40,11 @@ public class AlertBuilder {
         put(10,   errorCodes[7]);
         put(20,   errorCodes[8]);
         put(30,   errorCodes[9]);
+        put(100, errorCodes[10]);
     }};
 
-   public static void makeNew(Activity activity, Integer error){
-        new AlertDialog.Builder(activity)
+   public static AlertDialog makeNew(Activity activity, Integer error){
+      return new AlertDialog.Builder(activity)
                 .setTitle(ERRORS.get(error)[0])
                 .setMessage(ERRORS.get(error)[1])
                 .setPositiveButton(R.string.popup_button_okay, new DialogInterface.OnClickListener() {

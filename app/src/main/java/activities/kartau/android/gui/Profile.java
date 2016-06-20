@@ -23,6 +23,8 @@ import android.widget.TextView;
 import java.util.LinkedHashMap;
 
 import activities.kartau.android.httpresources.Controller;
+import activities.kartau.android.services.LocationTracker;
+import activities.kartau.android.services.LocationUpdater;
 import activities.kartau.android.staticdata.CommonValues;
 import activities.kartau.android.staticdata.Session;
 import activities.kartau.android.staticdata.User;
@@ -255,6 +257,9 @@ public class Profile extends ActionBarActivity{
         RW.storeData(CommonValues.IS_LOGIN, "false");
         User.clearUser(RW);
         Session.clearSession();
+        stopService(Session.getTracker());
+        stopService(Session.getUpdater());
+        Session.setRunThread(false);
         goNextActivity(Login.class);
     }
 

@@ -43,6 +43,7 @@ public class LocationUpdater extends Service {
         return null;
     }
 
+
     @Override
     public void onCreate()
     {
@@ -60,12 +61,15 @@ public class LocationUpdater extends Service {
                     //record the current time
                     long time = System.currentTimeMillis();
 
+                    
                     LinkedHashMap<String, String> params = new LinkedHashMap<String, String>();
                     Controller comm = new Controller();
-                    params.put(CommonValues.SESSION_TOKEN, Session.getToken());
-                    //make an instance of the HTTP controller
-                    comm.pullGroups(params);
-
+                    if(User.getForceMap() || User.getMapsActive()) {
+                        params.put(CommonValues.SESSION_TOKEN, Session.getToken());
+                        //make an instance of the HTTP controller
+                        comm.pullGroups(params);
+                        User.setForceMap(false);
+                    }
 
                     String groupList = RW.readData(CommonValues.GROUPS);
                     status = CommonValues.UPDATER_THEAD_ON;
@@ -121,10 +125,11 @@ public class LocationUpdater extends Service {
 
     @Override
     public void onDestroy() {
-        super.onDestroy();
         NotificationManager notificationManager = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.cancel(2);
         thread.interrupt();
+        super.onDestroy();
+
     }
 
 

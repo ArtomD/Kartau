@@ -1,6 +1,10 @@
 package activities.kartau.android.staticdata;
 
+import android.content.Intent;
+
 import activities.kartau.android.httpresources.jsonparser.NewSessionParser;
+import activities.kartau.android.services.LocationTracker;
+import activities.kartau.android.services.LocationUpdater;
 import activities.kartau.android.util.ReadWrite;
 
 /**
@@ -19,10 +23,17 @@ public class Session {
     private static boolean runThread = true;
     private static final Object lockRunThread = new Object();
 
+    private static Intent tracker;
+    private static Intent updater;
+    private static final Object lockTracker = new Object();
+    private static final Object lockUpdater = new Object();
+
     public Session(ReadWrite RW){
         Session.RW = RW;
     }
     public static void setRW(ReadWrite RW){Session.RW = RW;}
+    public static void setTracker(Intent tracker){synchronized (lockTracker){Session.tracker = tracker;}}
+    public static void setUpdater(Intent updater){synchronized (lockUpdater){Session.updater = updater;}}
 
     //this static method parses the response to the getSession HTTP request
     //it takes a response object
@@ -42,6 +53,8 @@ public class Session {
     public static String getStatus(){ synchronized (lockStatus){ return status;} }
     public static boolean getProvider(){ synchronized (lockProvider){ return provider;} }
     public static boolean getRunThread(){ synchronized (lockRunThread){ return runThread;} }
+    public static Intent getTracker(){ synchronized (lockTracker){ return tracker;} }
+    public static Intent getUpdater(){ synchronized (lockUpdater){ return updater;} }
 
     public static void clearSession(){
         Session.token ="";

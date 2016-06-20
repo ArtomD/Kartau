@@ -14,6 +14,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
 
+import activities.kartau.android.services.LocationTracker;
+import activities.kartau.android.services.LocationUpdater;
 import activities.kartau.android.staticdata.CommonValues;
 import activities.kartau.android.staticdata.Session;
 import activities.kartau.android.staticdata.User;
@@ -45,7 +47,15 @@ public class About extends ActionBarActivity {
         User.setRW(RW);
         Session.setRW(RW);
         setContentView(R.layout.activity_about);
-
+        LinearLayout layout = (LinearLayout)findViewById(R.id.aboutNavButtonLayout);
+        LinearLayout border = (LinearLayout)findViewById(R.id.border);
+        if((RW.readData(CommonValues.IS_LOGIN)).equals(CommonValues.TRUE)) {
+            layout.setVisibility(View.VISIBLE);
+            border.setVisibility(View.VISIBLE);
+        }else{
+            layout.setVisibility(View.GONE);
+            border.setVisibility(View.GONE);
+        }
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(false);
         //actionBar.setDisplayShowTitleEnabled(false);
@@ -56,20 +66,15 @@ public class About extends ActionBarActivity {
         this.menu = menu;
         getMenuInflater().inflate(R.menu.menu_about, menu);
         try{
-            LinearLayout layout = (LinearLayout)findViewById(R.id.aboutNavButtonLayout);
-            LinearLayout border = (LinearLayout)findViewById(R.id.border);
+
             if((RW.readData(CommonValues.IS_LOGIN)).equals(CommonValues.TRUE)) {
                 showOption(R.id.action_logout);
                 hideOption(R.id.action_login);
                 showOption(R.id.action_status);
-                layout.setVisibility(View.VISIBLE);
-                border.setVisibility(View.VISIBLE);
             }else{
                 showOption(R.id.action_login);
                 hideOption(R.id.action_logout);
                 hideOption(R.id.action_status);
-                layout.setVisibility(View.GONE);
-                border.setVisibility(View.GONE);
             }
         } catch (java.lang.NullPointerException e){
             e.printStackTrace();
@@ -142,6 +147,9 @@ public class About extends ActionBarActivity {
         RW.storeData(CommonValues.IS_LOGIN, CommonValues.FALSE);
         User.clearUser(RW);
         Session.clearSession();
+        stopService(Session.getTracker());
+        stopService(Session.getUpdater());
+        Session.setRunThread(false);
         goNextActivity(Login.class);
     }
 
